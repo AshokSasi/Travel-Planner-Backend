@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  itinerary_day: one
+  idea_card: one
+  title: MyString
+  notes: MyText
+  order_index: 1
+
+two:
+  itinerary_day: two
+  idea_card: two
+  title: MyString
+  notes: MyText
+  order_index: 1
