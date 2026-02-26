@@ -4,13 +4,13 @@ class Api::TripsController < ApplicationController
     before_action :authorize_request
 
     def index
-        trips = current_user.trips
-        render  json:trips
+        trips = current_user.trips.includes(trip_members: :user)
+        render json: trips.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name] } } } })
     end
     
     def show
-        @trip = Trip.find(params[:id])
-        render json:@trip
+        @trip = Trip.includes(trip_members: :user).find(params[:id])
+        render json: @trip.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name] } } } })
     end
 
     def create 
@@ -42,6 +42,14 @@ class Api::TripsController < ApplicationController
         render json: {trip: trip, membership: membership }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
         render json: { error: 'Invalid invite token' }, status: :not_found
+    end
+
+    def send_join_email
+        trip = Trip.find(params[:id])
+        TripMailer.with(email: params[:email], trip: trip, url: "#{ENV['FRONTEND_URL']}/login?inviteToken=#{trip.invite_token}&tripId=#{trip.id}").invite_email.deliver_now
+        render json: { message: 'Join email sent' }, status: :ok
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'Trip not found' }, status: :not_found
     end
 
     def regenerate_invite
