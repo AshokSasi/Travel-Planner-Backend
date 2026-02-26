@@ -8,7 +8,15 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   namespace :api do
+    resources :users, only: [:index, :show, :create]
+    post 'auth/signup', to: 'auth#signup'
+    post 'auth/login', to: 'auth#login'
+    post 'auth/google', to: 'auth#google'
     resources :trips, only: [:index, :create, :show] do
+      member do
+        post 'join', to: 'trips#join'
+        post 'regenerate_invite', to: 'trips#regenerate_invite'
+      end
       resources :idea_cards, only: [:index, :create, :update, :destroy]
       resources :itinerary_items, only: [:index, :update]
       resources :itinerary_days, only: [:index, :destroy, :create]

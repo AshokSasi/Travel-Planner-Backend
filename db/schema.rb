@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_24_022622) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_25_200203) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -57,6 +57,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_24_022622) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "trip_members", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "trip_id", null: false
+    t.string "role"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_id"], name: "index_trip_members_on_trip_id"
+    t.index ["user_id"], name: "index_trip_members_on_user_id"
+  end
+
   create_table "trips", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -64,10 +74,24 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_24_022622) do
     t.string "location"
     t.date "start_date", null: false
     t.date "end_date", null: false
+    t.string "invite_token"
+    t.datetime "invite_expires_at"
+    t.index ["invite_token"], name: "index_trips_on_invite_token"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "name", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "idea_cards", "trips"
   add_foreign_key "itinerary_days", "trips"
   add_foreign_key "itinerary_items", "idea_cards"
   add_foreign_key "itinerary_items", "itinerary_days"
+  add_foreign_key "trip_members", "trips"
+  add_foreign_key "trip_members", "users"
 end
