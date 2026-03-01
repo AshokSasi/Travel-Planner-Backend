@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get 'expenses/index'
+  get 'expenses/create'
+  get 'expenses/destroy'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -19,6 +22,7 @@ Rails.application.routes.draw do
         post 'send_join_email', to: 'trips#send_join_email'
         post 'regenerate_invite', to: 'trips#regenerate_invite'
       end
+      resources :expenses, only: [:index, :create, :update, :destroy]
       resources :idea_cards, only: [:index, :create, :update, :destroy]
       resources :itinerary_items, only: [:index, :update]
       resources :itinerary_days, only: [:index, :destroy, :create]

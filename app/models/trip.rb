@@ -5,7 +5,7 @@ class Trip < ApplicationRecord
     validates :name, presence: true
     validates :location, presence: true
     has_many :trip_members, dependent: :destroy
-
+    has_many :expenses, dependent: :destroy
     has_many :users, through: :trip_members
     after_create :create_itinerary_days
     before_create :generate_invite_token
