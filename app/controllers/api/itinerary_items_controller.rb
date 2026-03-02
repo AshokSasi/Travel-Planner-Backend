@@ -39,6 +39,6 @@ class Api::ItineraryItemsController < ApplicationController
     end
 
     def itinerary_item_params
-        params.require(:itinerary_item).permit(:title, :notes, :itinerary_day_id, :scheduled_time)
+        params.require(:itinerary_item).permit(:title, :notes, :itinerary_day_id, :scheduled_time, :time_of_day)
     end
 end

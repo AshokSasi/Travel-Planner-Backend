@@ -1,14 +1,18 @@
 class Api::ExpensesController < ApplicationController
     before_action :authorize_request
     before_action :set_trip, only: [:index, :create]
-    before_action :set_expense, only: [:update, :destroy]
+    before_action :set_expense, only: [:show, :update, :destroy]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
     include ActionView::Helpers::NumberHelper
 
   def index
-    expenses = @trip.expenses.includes(:user)
+    expenses = @trip.expenses.includes(:user).order(created_at: :desc)
     render json: expenses.map { |expense| expense_payload(expense) }
+  end
+
+  def show
+    render json: expense_payload(@expense)
   end
 
   def create

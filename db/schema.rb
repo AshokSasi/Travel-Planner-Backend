@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_01_030349) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_02_200611) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,6 +74,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_01_030349) do
     t.integer "day_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "city"
+    t.string "accomodation_name"
+    t.string "accomodation_address"
     t.index ["trip_id"], name: "index_itinerary_days_on_trip_id"
   end
 
@@ -86,8 +89,21 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_01_030349) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.time "scheduled_time"
+    t.string "time_of_day"
     t.index ["idea_card_id"], name: "index_itinerary_items_on_idea_card_id"
     t.index ["itinerary_day_id"], name: "index_itinerary_items_on_itinerary_day_id"
+  end
+
+  create_table "settlements", force: :cascade do |t|
+    t.bigint "trip_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "receiver_id"
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["receiver_id"], name: "index_settlements_on_receiver_id"
+    t.index ["trip_id"], name: "index_settlements_on_trip_id"
+    t.index ["user_id"], name: "index_settlements_on_user_id"
   end
 
   create_table "tests", force: :cascade do |t|
@@ -135,6 +151,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_01_030349) do
   add_foreign_key "itinerary_days", "trips"
   add_foreign_key "itinerary_items", "idea_cards"
   add_foreign_key "itinerary_items", "itinerary_days"
+  add_foreign_key "settlements", "trips"
+  add_foreign_key "settlements", "users"
+  add_foreign_key "settlements", "users", column: "receiver_id"
   add_foreign_key "trip_members", "trips"
   add_foreign_key "trip_members", "users"
 end

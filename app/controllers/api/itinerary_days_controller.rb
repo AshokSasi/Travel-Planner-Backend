@@ -18,6 +18,13 @@ class Api::ItineraryDaysController < ApplicationController
     render json: day
   end
 
+  def update
+    day = @trip.itinerary_days.find(params[:id])
+    day.update!(day_params)
+    update_trip_dates
+    render json: day
+  end
+
   def destroy
     @itinerary_day = ItineraryDay.find(params[:id])
 
@@ -40,7 +47,7 @@ class Api::ItineraryDaysController < ApplicationController
 
   private
   def day_params
-    params.require(:itinerary_day).permit(:date)
+    params.permit(:date, :city, :accomodation_name, :accomodation_address)
   end
   def set_trip
     @trip = Trip.find(params[:trip_id])

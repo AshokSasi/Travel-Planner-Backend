@@ -9,7 +9,7 @@ class Trip < ApplicationRecord
     has_many :users, through: :trip_members
     after_create :create_itinerary_days
     before_create :generate_invite_token
-    
+    has_many :settlements, dependent: :destroy
     private
 
     def create_itinerary_days

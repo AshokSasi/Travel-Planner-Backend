@@ -18,14 +18,16 @@ Rails.application.routes.draw do
     post 'auth/google', to: 'auth#google'
     resources :trips, only: [:index, :create, :show] do
       member do
+        get 'balances', to: 'balances#balances'
         post 'join', to: 'trips#join'
         post 'send_join_email', to: 'trips#send_join_email'
         post 'regenerate_invite', to: 'trips#regenerate_invite'
       end
-      resources :expenses, only: [:index, :create, :update, :destroy]
+      resources :settlements, only: [:index, :create]
+      resources :expenses, only: [:index, :create, :update, :destroy, :show]
       resources :idea_cards, only: [:index, :create, :update, :destroy]
       resources :itinerary_items, only: [:index, :update]
-      resources :itinerary_days, only: [:index, :destroy, :create]
+      resources :itinerary_days, only: [:index, :destroy, :create, :update]
     end
   end
 end

@@ -7,6 +7,8 @@ class User < ApplicationRecord
     has_many :trips, through: :trip_member
     has_one_attached :avatar
     validate :avatar_size
+    has_many :paid_settlements, class_name: "Settlement", foreign_key: "user_id"
+    has_many :received_settlements, class_name: "Settlement", foreign_key: "receiver_id"
 
     def avatar_url
         Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
