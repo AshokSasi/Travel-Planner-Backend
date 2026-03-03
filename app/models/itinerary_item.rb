@@ -13,9 +13,9 @@ class ItineraryItem < ApplicationRecord
   end
 
    def assign_time_of_day_from_time
-    return unless time.present?
+    return unless scheduled_time.present?
 
-    hour = time.hour
+    hour = scheduled_time.hour
     self.time_of_day =
       if hour < 12
         "morning"

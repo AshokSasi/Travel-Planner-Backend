@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_02_200611) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_03_011234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_02_200611) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "categories", force: :cascade do |t|
+    t.bigint "trip_id", null: false
+    t.string "name"
+    t.string "color", null: false
+    t.float "x", default: 0.0
+    t.float "y", default: 0.0
+    t.float "width", default: 350.0
+    t.float "height", default: 350.0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_id"], name: "index_categories_on_trip_id"
+  end
+
   create_table "expenses", force: :cascade do |t|
     t.bigint "trip_id", null: false
     t.bigint "user_id", null: false
@@ -66,6 +79,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_02_200611) do
     t.string "url"
     t.string "image"
     t.index ["trip_id"], name: "index_idea_cards_on_trip_id"
+  end
+
+  create_table "idea_upvotes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "idea_card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["idea_card_id"], name: "index_idea_upvotes_on_idea_card_id"
+    t.index ["user_id", "idea_card_id"], name: "index_idea_upvotes_on_user_id_and_idea_card_id", unique: true
+    t.index ["user_id"], name: "index_idea_upvotes_on_user_id"
   end
 
   create_table "itinerary_days", force: :cascade do |t|
@@ -145,9 +168,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_02_200611) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "categories", "trips"
   add_foreign_key "expenses", "trips"
   add_foreign_key "expenses", "users"
   add_foreign_key "idea_cards", "trips"
+  add_foreign_key "idea_upvotes", "idea_cards"
+  add_foreign_key "idea_upvotes", "users"
   add_foreign_key "itinerary_days", "trips"
   add_foreign_key "itinerary_items", "idea_cards"
   add_foreign_key "itinerary_items", "itinerary_days"

@@ -1,16 +1,26 @@
 class Api::IdeaCardsController < ApplicationController
     before_action :set_idea_card, only: [:update, :destroy]
-    before_action :set_trip, only: [:index, :create]
+    before_action :set_trip, only: [:index, :create, :update]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
     def index
-        render json: @trip.idea_cards
+        cards = @trip.idea_cards.includes(:upvoters)
+        render json: cards.map { |card|
+            card.as_json.merge(
+                upvotes_count: card.upvoters.size,
+                upvoted_by_current_user: card.upvoters.include?(current_user)
+            )
+        }
     end
 
     def create
         card = @trip.idea_cards.create!(idea_card_params)
         ItineraryItem.create!(title: card.title, notes: card.content, idea_card_id: card.id)
+                    ActionCable.server.broadcast(
+      "trip_#{@trip.id}",
+      { type: "IDEACARD_CREATED", item: card.as_json }
+    )
         render json: card
     end
 
@@ -21,6 +31,10 @@ class Api::IdeaCardsController < ApplicationController
         if itinerary_item
             itinerary_item.update!(title: @idea_card.title, notes: @idea_card.content)
         end
+            ActionCable.server.broadcast(
+      "trip_#{@trip.id}",
+      { type: "IDEACARD_UPDATED", item: @idea_card.as_json }
+    )
         render json: @idea_card
     end
 

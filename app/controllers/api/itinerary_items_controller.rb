@@ -11,11 +11,19 @@ class Api::ItineraryItemsController < ApplicationController
 
     def create
         card = ItineraryItem.create!(itinerary_item_params)
+          ActionCable.server.broadcast(
+      "trip_#{card.idea_card.trip_id}",
+      { type: "ITINERARY_CREATED", items: card.as_json }
+    )
         render json: card
     end
 
     def update
         @itinerary_item.update!(itinerary_item_params)
+         ActionCable.server.broadcast(
+      "trip_#{@itinerary_item.idea_card.trip_id}",
+      { type: "ITINERARY_UPDATED", item: @itinerary_item.as_json }
+    )
         render json: @itinerary_item
     end
 

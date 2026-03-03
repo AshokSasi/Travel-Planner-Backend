@@ -1,6 +1,6 @@
 class Api::ExpensesController < ApplicationController
     before_action :authorize_request
-    before_action :set_trip, only: [:index, :create]
+    before_action :set_trip, only: [:index, :create, :update, :destroy]
     before_action :set_expense, only: [:show, :update, :destroy]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
@@ -8,6 +8,7 @@ class Api::ExpensesController < ApplicationController
 
   def index
     expenses = @trip.expenses.includes(:user).order(created_at: :desc)
+    
     render json: expenses.map { |expense| expense_payload(expense) }
   end
 
@@ -17,6 +18,10 @@ class Api::ExpensesController < ApplicationController
 
   def create
     expense = @trip.expenses.create!(expense_params)
+     ActionCable.server.broadcast(
+      "trip_#{@trip.id}",
+    { type: "EXPENSE_CREATED", item: expense_payload(expense) }
+    )
     render json: expense_payload(expense), status: :created
   end
 
@@ -26,6 +31,10 @@ class Api::ExpensesController < ApplicationController
       return render json: { message: "You are not authorized to update this expense" }, status: :forbidden
     end
     @expense.update!(expense_params)
+         ActionCable.server.broadcast(
+      "trip_#{@trip.id}",
+    { type: "EXPENSE_UPDATED", item: expense_payload(@expense) }
+    )
     render json: expense_payload(@expense)
   end
 
@@ -34,6 +43,10 @@ class Api::ExpensesController < ApplicationController
       return render json: { message: "You are not authorized to delete this expense" }, status: :forbidden
     end
     @expense.destroy
+     ActionCable.server.broadcast(
+      "trip_#{@trip.id}",
+    { type: "EXPENSE_DELETED", item_id:  @expense.id }
+    )
     render json: { message: "Expense deleted successfully" }
   end
 

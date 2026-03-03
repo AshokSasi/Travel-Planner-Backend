@@ -23,9 +23,12 @@ Rails.application.routes.draw do
         post 'send_join_email', to: 'trips#send_join_email'
         post 'regenerate_invite', to: 'trips#regenerate_invite'
       end
+      resources :categories, only: [:index, :create, :update, :destroy]
       resources :settlements, only: [:index, :create]
       resources :expenses, only: [:index, :create, :update, :destroy, :show]
-      resources :idea_cards, only: [:index, :create, :update, :destroy]
+      resources :idea_cards, only: [:index, :create, :update, :destroy] do 
+        resources :idea_upvotes, only: [:create, :destroy]
+      end
       resources :itinerary_items, only: [:index, :update]
       resources :itinerary_days, only: [:index, :destroy, :create, :update]
     end
