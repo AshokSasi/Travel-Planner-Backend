@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: travel_planner_api_production
+      POSTGRES_USER: travel_planner_api
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U travel_planner_api -d travel_planner_api_production"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://travel_planner_api:${POSTGRES_PASSWORD}@db:5432/travel_planner_api_production
+      REDIS_URL: redis://redis:6379/1
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      TRAVEL_PLANNER_API_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - rails_storage:/rails/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  rails_storage:

@@ -8,4 +8,18 @@ class TripChannel < ApplicationCable::Channel
   def unsubscribed
     # Any cleanup needed when channel is unsubscribed
   end
+
+  def cursor_move(data)
+    ActionCable.server.broadcast(
+      "trip_#{params[:trip_id]}",
+      {
+        type: "CURSOR_MOVED",
+        user_id: current_user.id.to_s,
+        user_name: current_user.name,
+        x: data["x"],
+        y: data["y"]
+      }
+    )
+  end
+
 end
