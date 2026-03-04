@@ -12,10 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build and restart
-        run: |
-          docker compose up -d --build web
-          docker compose exec -T web bin/rails db:migrate
+      - name: Rebuild and restart
+        run: docker compose up -d --build --remove-orphans
 
       - name: Clean up old images
+        if: always()
         run: docker image prune -f
