@@ -12,11 +12,11 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     get 'me', to: 'users#me'
-    resources :users, only: [:index, :show, :create, :update]
+    resources :users, only: [:index, :show, :create, :update, :destroy]
     post 'auth/signup', to: 'auth#signup'
     post 'auth/login', to: 'auth#login'
     post 'auth/google', to: 'auth#google'
-    resources :trips, only: [:index, :create, :show] do
+    resources :trips, only: [:index, :create, :show, :destroy] do
       member do
         get 'balances', to: 'balances#balances'
         post 'join', to: 'trips#join'

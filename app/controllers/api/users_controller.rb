@@ -1,6 +1,6 @@
 class Api::UsersController < ApplicationController
     before_action :authorize_request
-    before_action :set_user, only: [:update]
+    before_action :set_user, only: [:update, :destroy]
     def me
         render json: current_user.as_json(only: [:id, :name, :email], methods: :avatar_url), status: :ok
     end
@@ -23,6 +23,13 @@ class Api::UsersController < ApplicationController
         render json: @user.as_json(only: [:id, :name, :email], methods: :avatar_url), status: :ok
     rescue ActiveRecord::RecordInvalid => e
         render json: { errors: e.record.errors.full_messages }, status: :unprocessable_content
+    end
+
+    def destroy
+        current_user.destroy
+        render json: { message: 'User deleted' }, status: :ok
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'User not found' }, status: :not_found
     end
 
     private

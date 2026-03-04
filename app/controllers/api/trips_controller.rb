@@ -26,6 +26,14 @@ class Api::TripsController < ApplicationController
 
     end
 
+    def destroy
+        trip = current_user.trips.find(params[:id])
+        trip.destroy
+        render json: { message: 'Trip deleted' }, status: :ok
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'Trip not found' }, status: :not_found
+    end
+    
     def join
         trip = Trip.find_by!(invite_token: params[:invite_token])
 
