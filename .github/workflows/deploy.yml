@@ -12,6 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Copy env file
+        run: cp /home/ashok/Travel-Planner-Backend/.env .env
+
       - name: Rebuild and restart
         run: docker compose up -d --build --remove-orphans
 
