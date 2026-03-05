@@ -10,11 +10,13 @@ class Api::ItineraryItemsController < ApplicationController
     end
 
     def create
-        card = ItineraryItem.create!(itinerary_item_params)
-          ActionCable.server.broadcast(
-      "trip_#{card.idea_card.trip_id}",
-      { type: "ITINERARY_CREATED", items: card.as_json }
-    )
+        trip = Trip.find(params[:trip_id])
+        idea_card = trip.idea_cards.create!(title: params[:itinerary_item][:title])
+        card = ItineraryItem.create!(itinerary_item_params.merge(idea_card_id: idea_card.id))
+        ActionCable.server.broadcast(
+          "trip_#{trip.id}",
+          { type: "ITINERARY_CREATED", items: card.as_json }
+        )
         render json: card
     end
 

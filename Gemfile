@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "4.0.1"
+ruby "~> 3.3"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.6"
@@ -15,7 +15,6 @@ gem "puma", ">= 5.0"
 # gem "jbuilder"
 gem 'jwt'
 gem 'bcrypt', '~> 3.1.7'
-gem 'google-id-token'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
@@ -24,11 +23,10 @@ gem 'google-id-token'
 gem 'rack-cors'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
-
+gem "anthropic"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "tzinfo-data"
 gem "rack-attack"
-# Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]

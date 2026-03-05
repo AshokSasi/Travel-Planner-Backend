@@ -1,6 +1,6 @@
 class ItineraryItem < ApplicationRecord
   belongs_to :itinerary_day, optional: true
-  belongs_to :idea_card
+  belongs_to :idea_card, optional: true
   TIMES_OF_DAY = %w[morning afternoon evening].freeze
   before_validation :nullify_invalid_itinerary_day
   validates :time_of_day, inclusion: { in: TIMES_OF_DAY }, allow_nil: true

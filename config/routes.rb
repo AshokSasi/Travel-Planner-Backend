@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     post 'auth/google', to: 'auth#google'
     resources :trips, only: [:index, :create, :show, :destroy] do
       member do
+        post 'generate_itinerary', to: 'itinerary_generator#generate'                 
         get 'balances', to: 'balances#balances'
         post 'join', to: 'trips#join'
         post 'send_join_email', to: 'trips#send_join_email'
