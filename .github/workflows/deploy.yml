@@ -16,7 +16,7 @@ jobs:
         run: cp /home/ashok/Travel-Planner-Backend/.env .env
 
       - name: Rebuild and restart
-        run: docker compose up -d --build --remove-orphans
+        run: docker compose build --no-cache && docker compose up -d --remove-orphans
 
       - name: Clean up old images
         if: always()
