@@ -16,6 +16,7 @@ class TripChannel < ApplicationCable::Channel
         type: "CURSOR_MOVED",
         user_id: current_user.id.to_s,
         user_name: current_user.name,
+        avatar_url: current_user.avatar_url,
         x: data["x"],
         y: data["y"]
       }

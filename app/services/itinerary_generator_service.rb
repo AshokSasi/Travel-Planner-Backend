@@ -31,6 +31,7 @@ class ItineraryGeneratorService
         Budget: #{@preferences[:budget]}
         Travel style: #{@preferences[:travel_style]}
         Group type: #{@preferences[:group_type]}
+        Interests: #{format_interests}
         Return ONLY a valid JSON object, no other text, no markdown, no backticks:
       {
         "days": [
@@ -58,7 +59,15 @@ class ItineraryGeneratorService
       - scheduled_time must be in HH:MM:SS format
       - Generate 3-5 items per day
       - Be specific with real place names and addresses
+      - If interests include Food & Nightlife, include at least one restaurant or bar per day
+      - If interests include Nature & Outdoors, avoid scheduling indoor activities in the morning
+      - If no interests specified, generate a balanced mix of everything
     PROMPT
+    end
+
+    def format_interests
+        return "Balanced mix of everything" if @preferences[:interests].blank?
+        @preferences[:interests].join(", ")
     end
 
   def create_itinerary(result)
@@ -93,4 +102,5 @@ class ItineraryGeneratorService
 
     created_days
   end
+
 end

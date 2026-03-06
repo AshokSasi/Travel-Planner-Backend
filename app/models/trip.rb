@@ -22,6 +22,5 @@ class Trip < ApplicationRecord
     
     def generate_invite_token
         self.invite_token = SecureRandom.urlsafe_base64(16)
-        self.invite_expires_at = 7.days.from_now
     end
 end

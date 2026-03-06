@@ -2,7 +2,7 @@ class Api::ItineraryGeneratorController < ApplicationController
   def generate
     trip = Trip.find(params[:id])
 
-    preferences = params.permit(:budget, :travel_style, :group_type)
+    preferences = params.permit(:budget, :travel_style, :group_type, interests: []) # Expecting interests as an array
     days = ItineraryGeneratorService.new(trip, preferences).call
     render json: { success: true, itinerary: days }, status: :ok
   rescue ::Anthropic::Errors::Error => e

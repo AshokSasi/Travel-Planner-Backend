@@ -41,9 +41,7 @@ class Api::TripsController < ApplicationController
             return render json: { error: 'Invalid invite token' }, status: :not_found
         end
 
-        if trip.invite_expires_at.present? && trip.invite_expires_at < Time.current
-            return render json: { error: 'Invite token has expired' }, status: :forbidden
-        end
+
         membership = TripMember.find_or_create_by(user_id: current_user.id, trip_id: trip.id) do |tm|
             tm.role = "editor"
         end
@@ -62,8 +60,8 @@ class Api::TripsController < ApplicationController
 
     def regenerate_invite
         trip = current_user.trips.find(params[:id])
-        trip.update!(invite_token: SecureRandom.urlsafe_base64(16), invite_expires_at: 7.days.from_now)
-        render json: {invite_token: trip.invite_token, invite_expires_at: trip.invite_expires_at }, status: :ok
+        trip.update!(invite_token: SecureRandom.urlsafe_base64(16))
+        render json: { invite_token: trip.invite_token }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
         render json: { error: 'Trip not found' }, status: :not_found
     end
