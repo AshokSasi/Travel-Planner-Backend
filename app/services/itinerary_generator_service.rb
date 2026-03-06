@@ -70,10 +70,13 @@ class ItineraryGeneratorService
         @preferences[:interests].join(", ")
     end
 
+  CARD_COLUMN_WIDTH = 320
+  CARD_ROW_HEIGHT = 180
+
   def create_itinerary(result)
     created_days = []
 
-    result["days"].each do |day_data|
+    result["days"].each_with_index do |day_data, day_index|
       day = @trip.itinerary_days.find_by(day_number: day_data["day_number"])
       next unless day
 
@@ -85,8 +88,13 @@ class ItineraryGeneratorService
 
       day.itinerary_items.destroy_all
 
-      day_data["items"].each do |item|
-        idea_card = @trip.idea_cards.create!(title: item["title"], content: item["notes"])
+      day_data["items"].each_with_index do |item, item_index|
+        idea_card = @trip.idea_cards.create!(
+          title: item["title"],
+          content: item["notes"],
+          x: day_index * CARD_COLUMN_WIDTH,
+          y: item_index * CARD_ROW_HEIGHT
+        )
         day.itinerary_items.create!(
           title: item["title"],
           notes: item["notes"],

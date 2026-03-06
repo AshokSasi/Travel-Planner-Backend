@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         post 'join', to: 'trips#join'
         post 'send_join_email', to: 'trips#send_join_email'
         post 'regenerate_invite', to: 'trips#regenerate_invite'
+        post 'leave_trip', to: 'trips#leave_trip'
       end
       resources :categories, only: [:index, :create, :update, :destroy]
       resources :settlements, only: [:index, :create]

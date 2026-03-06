@@ -66,6 +66,19 @@ class Api::TripsController < ApplicationController
         render json: { error: 'Trip not found' }, status: :not_found
     end
 
+    def leave_trip
+        trip = current_user.trips.find(params[:id])
+        membership = trip.trip_members.find_by(user_id: current_user.id)
+        if membership
+            membership.destroy
+            render json: { message: 'Left the trip' }, status: :ok
+        else
+            render json: { error: 'Membership not found' }, status: :not_found
+        end
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'Trip not found' }, status: :not_found
+    end
+
     private 
     def trip_params
         params.require(:trip).permit(:name, :location, :start_date, :end_date)
