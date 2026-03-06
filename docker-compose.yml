@@ -35,6 +35,9 @@ services:
       REDIS_URL: redis://redis:6379/1
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
       TRAVEL_PLANNER_API_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GMAIL_USERNAME: ${GMAIL_USERNAME}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
     volumes:
       - rails_storage:/rails/storage
     depends_on:
