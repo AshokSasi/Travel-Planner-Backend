@@ -26,6 +26,16 @@ class Api::TripsController < ApplicationController
 
     end
 
+    def update
+        trip = current_user.trips.find(params[:id])
+        trip.update!(trip_params)
+        render json: trip, status: :ok
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'Trip not found' }, status: :not_found
+    rescue ActiveRecord::RecordInvalid => e
+        render json: { error: e.message }, status: :unprocessable_entity
+    end
+
     def destroy
         trip = current_user.trips.find(params[:id])
         trip.destroy
@@ -81,7 +91,7 @@ class Api::TripsController < ApplicationController
 
     private 
     def trip_params
-        params.require(:trip).permit(:name, :location, :start_date, :end_date)
+        params.require(:trip).permit(:name, :location, :start_date, :end_date, :image_url)
     end
 
     def invalid_create(error)

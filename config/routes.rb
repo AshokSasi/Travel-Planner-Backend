@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     post 'auth/signup', to: 'auth#signup'
     post 'auth/login', to: 'auth#login'
     post 'auth/google', to: 'auth#google'
-    resources :trips, only: [:index, :create, :show, :destroy] do
+    resources :trips, only: [:index, :create, :show, :destroy, :update] do
       member do
         post 'generate_itinerary', to: 'itinerary_generator#generate'                 
         get 'balances', to: 'balances#balances'
