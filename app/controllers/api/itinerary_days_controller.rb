@@ -2,7 +2,7 @@ class Api::ItineraryDaysController < ApplicationController
   before_action :set_trip
 
   def index
-    render json: @trip.itinerary_days
+    render json: @trip.itinerary_days.order(:date)
   end
 
   def create

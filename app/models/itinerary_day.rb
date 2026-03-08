@@ -1,4 +1,4 @@
 class ItineraryDay < ApplicationRecord
   belongs_to :trip
-  has_many :itinerary_items, dependent: :destroy
+  has_many :itinerary_items, dependent: :nullify
 end
