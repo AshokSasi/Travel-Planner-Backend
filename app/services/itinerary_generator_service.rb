@@ -28,6 +28,7 @@ class ItineraryGeneratorService
         Start Date: #{@trip.start_date}
         End Date: #{@trip.end_date}
         Number of Days: #{@num_days}
+        Season: #{season_context}
         Budget: #{@preferences[:budget]}
         Travel style: #{@preferences[:travel_style]}
         Group type: #{@preferences[:group_type]}
@@ -62,7 +63,19 @@ class ItineraryGeneratorService
       - If interests include Food & Nightlife, include at least one restaurant or bar per day
       - If interests include Nature & Outdoors, avoid scheduling indoor activities in the morning
       - If no interests specified, generate a balanced mix of everything
+      - Factor in the season when suggesting activities (e.g. winter = indoor alternatives, skiing, holiday events; summer = outdoor, beaches, festivals)
     PROMPT
+    end
+
+    def season_context
+        month = @trip.start_date.month
+        season = case month
+                 when 12, 1, 2 then "Winter"
+                 when 3, 4, 5  then "Spring"
+                 when 6, 7, 8  then "Summer"
+                 when 9, 10, 11 then "Autumn"
+                 end
+        "#{@trip.start_date.strftime('%B')} (#{season})"
     end
 
     def format_interests
