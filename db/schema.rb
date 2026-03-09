@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_06_222842) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_09_015702) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -155,6 +155,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_06_222842) do
     t.string "invite_token"
     t.datetime "invite_expires_at"
     t.string "image_url"
+    t.boolean "is_template", default: false
+    t.string "template_description"
+    t.string "template_tags", default: [], array: true
+    t.integer "duplicate_count", default: 0
+    t.datetime "published_at"
     t.index ["invite_token"], name: "index_trips_on_invite_token"
   end
 

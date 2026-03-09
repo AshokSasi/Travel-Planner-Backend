@@ -4,7 +4,7 @@ class Api::TripsController < ApplicationController
     before_action :authorize_request
 
     def index
-        trips = current_user.trips.includes(trip_members: :user)
+        trips = current_user.trips.includes(trip_members: :user).where(is_template: false)
         render json: trips.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name] } } } })
     end
     
@@ -89,9 +89,114 @@ class Api::TripsController < ApplicationController
         render json: { error: 'Trip not found' }, status: :not_found
     end
 
+    def publish_template
+        source = current_user.trips.find(params[:id])
+
+        new_trip = nil
+        ActiveRecord::Base.transaction do
+            new_trip = Trip.create!(trip_params.merge(is_template: true, published_at: Time.current))
+            new_trip.trip_members.create!(user_id: current_user.id, trip_id: new_trip.id, role: "owner")
+
+            idea_card_id_map = {}
+            source.idea_cards.each do |card|
+                new_card = new_trip.idea_cards.create!(
+                    title: card.title, content: card.content,
+                    x: card.x, y: card.y, category: card.category,
+                    url: card.url, image: card.image, upvotes: 0
+                )
+                idea_card_id_map[card.id] = new_card.id
+            end
+
+            day_number_map = new_trip.itinerary_days.index_by(&:day_number)
+
+            source.itinerary_days.includes(:itinerary_items).each do |old_day|
+                new_day = day_number_map[old_day.day_number]
+                next unless new_day
+
+                old_day.itinerary_items.each do |item|
+                    new_idea_card_id = idea_card_id_map[item.idea_card_id]
+                    next unless new_idea_card_id
+
+                    new_day.itinerary_items.create!(
+                        idea_card_id: new_idea_card_id,
+                        title: item.title, notes: item.notes,
+                        order_index: item.order_index,
+                        scheduled_time: item.scheduled_time,
+                        time_of_day: item.time_of_day
+                    )
+                end
+            end
+        end
+
+        render json: new_trip, status: :created
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'Trip not found' }, status: :not_found
+    rescue ActiveRecord::RecordInvalid => e
+        render json: { error: e.message }, status: :unprocessable_entity
+    end
+
+    def get_templates
+        templates = Trip.where(is_template: true).includes(trip_members: :user)
+        render json: templates.map { |trip|
+            owner = trip.trip_members.find { |tm| tm.role == 'owner' }&.user
+            trip.as_json.merge(owner_name: owner&.name)
+        }, status: :ok
+    end
+
+    def duplicate_template
+        source = Trip.find(params[:id])
+        return render json: { error: 'Trip is not a template' }, status: :unprocessable_entity unless source.is_template?
+
+        new_trip = nil
+        ActiveRecord::Base.transaction do
+            new_trip = Trip.create!(trip_params.merge(is_template: false))
+            new_trip.trip_members.create!(user_id: current_user.id, trip_id: new_trip.id, role: "owner")
+
+            # Map old idea_card id -> new idea_card
+            idea_card_id_map = {}
+            source.idea_cards.each do |card|
+                new_card = new_trip.idea_cards.create!(
+                    title: card.title, content: card.content,
+                    x: card.x, y: card.y, category: card.category,
+                    url: card.url, image: card.image, upvotes: 0
+                )
+                idea_card_id_map[card.id] = new_card.id
+            end
+
+            # after_create auto-generates itinerary_days — map by day_number
+            day_number_map = new_trip.itinerary_days.index_by(&:day_number)
+
+            source.itinerary_days.includes(:itinerary_items).each do |old_day|
+                new_day = day_number_map[old_day.day_number]
+                next unless new_day
+
+                old_day.itinerary_items.each do |item|
+                    new_idea_card_id = idea_card_id_map[item.idea_card_id]
+                    next unless new_idea_card_id
+
+                    new_day.itinerary_items.create!(
+                        idea_card_id: new_idea_card_id,
+                        title: item.title, notes: item.notes,
+                        order_index: item.order_index,
+                        scheduled_time: item.scheduled_time,
+                        time_of_day: item.time_of_day
+                    )
+                end
+            end
+
+            source.increment!(:duplicate_count)
+        end
+
+        render json: new_trip, status: :created
+    rescue ActiveRecord::RecordNotFound => e
+        render json: { error: 'Template not found' }, status: :not_found
+    rescue ActiveRecord::RecordInvalid => e
+        render json: { error: e.message }, status: :unprocessable_entity
+    end
+
     private 
     def trip_params
-        params.require(:trip).permit(:name, :location, :start_date, :end_date, :image_url)
+        params.require(:trip).permit(:name, :location, :start_date, :end_date, :image_url, :template_description, template_tags: [])
     end
 
     def invalid_create(error)

@@ -17,13 +17,16 @@ Rails.application.routes.draw do
     post 'auth/login', to: 'auth#login'
     post 'auth/google', to: 'auth#google'
     resources :trips, only: [:index, :create, :show, :destroy, :update] do
+      get 'get_templates', to: 'trips#get_templates', on: :collection
       member do
-        post 'generate_itinerary', to: 'itinerary_generator#generate'                 
+        post 'generate_itinerary', to: 'itinerary_generator#generate'
         get 'balances', to: 'balances#balances'
         post 'join', to: 'trips#join'
         post 'send_join_email', to: 'trips#send_join_email'
         post 'regenerate_invite', to: 'trips#regenerate_invite'
         post 'leave_trip', to: 'trips#leave_trip'
+        post 'publish_template', to: 'trips#publish_template'
+        post 'duplicate_template', to: 'trips#duplicate_template'
       end
       resources :categories, only: [:index, :create, :update, :destroy]
       resources :settlements, only: [:index, :create]
