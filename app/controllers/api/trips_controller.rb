@@ -5,12 +5,12 @@ class Api::TripsController < ApplicationController
 
     def index
         trips = current_user.trips.includes(trip_members: :user).where(is_template: false)
-        render json: trips.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name] } } } })
+        render json: trips.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name], methods: [:avatar_url] } } } })
     end
     
     def show
         @trip = Trip.includes(trip_members: :user).find(params[:id])
-        render json: @trip.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name] } } } })
+        render json: @trip.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name], methods: [:avatar_url] } } } })
     end
 
     def create 

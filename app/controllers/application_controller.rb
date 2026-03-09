@@ -20,4 +20,8 @@ class ApplicationController < ActionController::API
             render json: { errors: e.message }, status: :unauthorized
         end
     end
+    
+    def not_found
+        render json: { error: "Not found" }, status: :not_found
+    end
 end

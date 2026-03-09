@@ -38,4 +38,8 @@ Rails.application.routes.draw do
       resources :itinerary_days, only: [:index, :destroy, :create, :update]
     end
   end
+  match '*unmatched', to: 'application#not_found', via: :all
+  match '/404', to: 'application#not_found', via: :all
+  match '/500', to: 'application#internal_error', via: :all
 end
+
