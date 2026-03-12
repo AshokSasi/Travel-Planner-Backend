@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_09_015702) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_12_192531) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -78,6 +78,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_09_015702) do
     t.integer "upvotes", default: 0
     t.string "url"
     t.string "image"
+    t.string "address"
     t.index ["trip_id"], name: "index_idea_cards_on_trip_id"
   end
 
@@ -113,6 +114,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_09_015702) do
     t.datetime "updated_at", null: false
     t.time "scheduled_time"
     t.string "time_of_day"
+    t.string "address"
     t.index ["idea_card_id"], name: "index_itinerary_items_on_idea_card_id"
     t.index ["itinerary_day_id"], name: "index_itinerary_items_on_itinerary_day_id"
   end

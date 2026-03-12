@@ -48,7 +48,8 @@ class ItineraryGeneratorService
                 "notes": "Brief description and tips",
                 "scheduled_time": "HH:MM:SS",
                 "time_of_day": "morning",
-                "order_index": 0
+                "order_index": 0,
+                "address": "Full street address, City, Country"
               }
             ]
           }
@@ -60,6 +61,8 @@ class ItineraryGeneratorService
       - scheduled_time must be in HH:MM:SS format
       - Generate 3-5 items per day
       - Be specific with real place names and addresses
+      - address must be a real, specific street address suitable for Google Maps search
+      - If a specific street address is unknown, use the place name and city (e.g. "Eiffel Tower, Paris, France")
       - If interests include Food & Nightlife, include at least one restaurant or bar per day
       - If interests include Nature & Outdoors, avoid scheduling indoor activities in the morning
       - If no interests specified, generate a balanced mix of everything
@@ -114,6 +117,7 @@ class ItineraryGeneratorService
           scheduled_time: item["scheduled_time"],
           time_of_day: item["time_of_day"],
           order_index: item["order_index"],
+          address: item["address"],
           idea_card: idea_card
         )
       end

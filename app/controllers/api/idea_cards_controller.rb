@@ -16,7 +16,7 @@ class Api::IdeaCardsController < ApplicationController
 
     def create
         card = @trip.idea_cards.create!(idea_card_params)
-        ItineraryItem.create!(title: card.title, notes: card.content, idea_card_id: card.id)
+        ItineraryItem.create!(title: card.title, notes: card.content, idea_card_id: card.id, address: card.address)
                     ActionCable.server.broadcast(
       "trip_#{@trip.id}",
       { type: "IDEACARD_CREATED", item: card.as_json }
@@ -29,7 +29,7 @@ class Api::IdeaCardsController < ApplicationController
         # Update the corresponding ItineraryItem if it exists
         itinerary_item = @idea_card.itinerary_items.first
         if itinerary_item
-            itinerary_item.update!(title: @idea_card.title, notes: @idea_card.content)
+            itinerary_item.update!(title: @idea_card.title, notes: @idea_card.content, address: @idea_card.address)
         end
             ActionCable.server.broadcast(
       "trip_#{@trip.id}",
@@ -62,6 +62,6 @@ class Api::IdeaCardsController < ApplicationController
     end
 
     def idea_card_params
-        params.require(:idea_card).permit(:title, :content, :x, :y, :category, :upvotes, :image, :url)
+        params.require(:idea_card).permit(:title, :content, :x, :y, :category, :upvotes, :image, :url, :address)
     end
 end
