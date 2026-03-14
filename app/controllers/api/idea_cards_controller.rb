@@ -1,6 +1,6 @@
 class Api::IdeaCardsController < ApplicationController
-    before_action :set_idea_card, only: [:update, :destroy]
-    before_action :set_trip, only: [:index, :create, :update]
+    before_action :set_idea_card, only: [ :update, :destroy ]
+    before_action :set_trip, only: [ :index, :create, :update ]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
@@ -46,11 +46,11 @@ class Api::IdeaCardsController < ApplicationController
     private
 
     def invalid_create(error)
-        render json: {message: error.message}, status: :unprocessable_entity
+        render json: { message: error.message }, status: :unprocessable_entity
     end
-    
+
     def render_not_found(error)
-    render json: {message: error.message}, status: :not_found
+    render json: { message: error.message }, status: :not_found
     end
 
     def set_idea_card

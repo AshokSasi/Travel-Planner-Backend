@@ -32,7 +32,6 @@ class Api::ItineraryDaysController < ApplicationController
     @itinerary_day.destroy
     update_trip_dates
     render json: { message: "Itinerary day deleted successfully" }
-   
   end
 
    def update_trip_dates
