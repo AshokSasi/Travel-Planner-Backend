@@ -6,15 +6,15 @@ class ItineraryGeneratorService
     end
 
     def call
-        client = Anthropic::Client.new(api_key: ENV['ANTHROPIC_API_KEY'])
+        client = Anthropic::Client.new(api_key: ENV["ANTHROPIC_API_KEY"])
 
         response = client.messages.create(
             model: "claude-haiku-4-5-20251001",
             max_tokens: 8000,
-            messages: [{role: "user", content: prompt}]
+            messages: [ { role: "user", content: prompt } ]
         )
 
-        text = response.content.first.text.gsub(/\A```(?:json)?\n?/, '').gsub(/\n?```\z/, '').strip
+        text = response.content.first.text.gsub(/\A```(?:json)?\n?/, "").gsub(/\n?```\z/, "").strip
         result = JSON.parse(text)
         create_itinerary(result)
     end
@@ -73,11 +73,11 @@ class ItineraryGeneratorService
     def season_context
         month = @trip.start_date.month
         season = case month
-                 when 12, 1, 2 then "Winter"
-                 when 3, 4, 5  then "Spring"
-                 when 6, 7, 8  then "Summer"
-                 when 9, 10, 11 then "Autumn"
-                 end
+        when 12, 1, 2 then "Winter"
+        when 3, 4, 5  then "Spring"
+        when 6, 7, 8  then "Summer"
+        when 9, 10, 11 then "Autumn"
+        end
         "#{@trip.start_date.strftime('%B')} (#{season})"
     end
 
@@ -127,5 +127,4 @@ class ItineraryGeneratorService
 
     created_days
   end
-
 end

@@ -4,7 +4,7 @@ class TripMember < ApplicationRecord
   validates :user_id, uniqueness: { scope: :trip_id, message: "is already a member of this trip" }
   validates :role, presence: true
 
-  enum role:{
+  enum role: {
     owner: "owner",
     editor: "editor",
     viewer: "viewer"

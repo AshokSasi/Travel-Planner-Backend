@@ -1,6 +1,4 @@
 class Api::BalancesController < ApplicationController
-
-
   def balances
     trip = Trip.find(params[:id])
     balances = TripBalanceCalculator.new(trip, current_user).call
@@ -8,5 +6,4 @@ class Api::BalancesController < ApplicationController
   end
 
   private
-
 end

@@ -18,3 +18,11 @@ db-migrate:
 .PHONY: db-drop
 db-drop:
 	rails db:drop
+
+.PHONY: rubocop
+rubocop:
+	./bin/rubocop
+
+.PHONY: rubocop-fix
+rubocop-fix:
+	./bin/rubocop -A

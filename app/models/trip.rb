@@ -40,7 +40,7 @@ class Trip < ApplicationRecord
             day.update_columns(day_number: idx + 1)
         end
     end
-    
+
     def generate_invite_token
         self.invite_token = SecureRandom.urlsafe_base64(16)
     end
