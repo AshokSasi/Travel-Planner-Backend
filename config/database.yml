@@ -15,11 +15,11 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: 127.0.0.1
-  port: 5434
+  host: <%= ENV['POSTGRES_DB_HOST'] %>
+  port: <%= ENV['POSTGRES_DB_PORT'] %>
   database: TravelPlannerDB
-  username: postgres      # default superuser
-  password: 563797 # whatever you set in Postgres
+  username: <%= ENV['POSTGRES_DB_USER'] %>
+  password: <%= ENV['POSTGRES_DB_PASSWORD'] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
