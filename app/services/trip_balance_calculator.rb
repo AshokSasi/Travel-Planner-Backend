@@ -1,4 +1,4 @@
-class TripBalanceCalculator 
+class TripBalanceCalculator
     def initialize(trip, current_user)
         @trip = trip
         @current_user = current_user
@@ -6,7 +6,7 @@ class TripBalanceCalculator
     end
 
     def call
-        balances = Hash.new {|h,k| h[k] = 0}
+        balances = Hash.new { |h, k| h[k] = 0 }
 
         calculate_expenses(balances)
         apply_settlements(balances)
@@ -17,7 +17,6 @@ class TripBalanceCalculator
     private
 
     def apply_settlements(balances)
-    
         @trip.settlements.each do |settlement|
             if settlement.user_id == @current_user.id
                 balances[settlement.receiver_id] += settlement.amount

@@ -1,35 +1,35 @@
 class Api::UsersController < ApplicationController
     before_action :authorize_request
-    before_action :set_user, only: [:update, :destroy]
+    before_action :set_user, only: [ :update, :destroy ]
     def me
-        render json: current_user.as_json(only: [:id, :name, :email, :onboarding_complete, :tutorial_complete], methods: :avatar_url), status: :ok
+        render json: current_user.as_json(only: [ :id, :name, :email, :onboarding_complete, :tutorial_complete ], methods: :avatar_url), status: :ok
     end
 
     def update
         if params[:new_password].present? && params[:password_confirmation].present?
             unless current_user.authenticate(params[:current_password])
-                return render json: { errors: 'Current password is incorrect' }, status: :unauthorized
+                return render json: { errors: "Current password is incorrect" }, status: :unauthorized
             end
 
             unless params[:new_password] == params[:password_confirmation]
-                return render json: { errors: 'New password and confirmation do not match' }, status: :unprocessable_entity
+                return render json: { errors: "New password and confirmation do not match" }, status: :unprocessable_entity
             end
 
             @user.update!(password: params[:new_password])
-            return  render json: @user.as_json(only: [:id, :name, :email, :onboarding_complete, :tutorial_complete], methods: :avatar_url), status: :ok
+            return  render json: @user.as_json(only: [ :id, :name, :email, :onboarding_complete, :tutorial_complete ], methods: :avatar_url), status: :ok
         end
 
         @user.update!(user_params)
-        render json: @user.as_json(only: [:id, :name, :email, :onboarding_complete, :tutorial_complete], methods: :avatar_url), status: :ok
+        render json: @user.as_json(only: [ :id, :name, :email, :onboarding_complete, :tutorial_complete ], methods: :avatar_url), status: :ok
     rescue ActiveRecord::RecordInvalid => e
         render json: { errors: e.record.errors.full_messages }, status: :unprocessable_content
     end
 
     def destroy
         current_user.destroy
-        render json: { message: 'User deleted' }, status: :ok
+        render json: { message: "User deleted" }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'User not found' }, status: :not_found
+        render json: { error: "User not found" }, status: :not_found
     end
 
     private
@@ -41,6 +41,4 @@ class Api::UsersController < ApplicationController
     def set_user
         @user = User.find(params[:id])
     end
-
-
 end

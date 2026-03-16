@@ -1,5 +1,5 @@
 class Api::IdeaUpvotesController < ApplicationController
-    before_action :set_idea, only: [:destroy, :create]
+    before_action :set_idea, only: [ :destroy, :create ]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
