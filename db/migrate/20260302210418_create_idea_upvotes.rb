@@ -6,6 +6,6 @@ class CreateIdeaUpvotes < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
-    add_index :idea_upvotes, [:user_id, :idea_card_id], unique: true
+    add_index :idea_upvotes, [ :user_id, :idea_card_id ], unique: true
   end
 end

@@ -1,12 +1,12 @@
 class Api::ItineraryItemsController < ApplicationController
-    before_action :set_itinerary_item, only: [:update]
+    before_action :set_itinerary_item, only: [ :update ]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
     def index
         trip = Trip.find(params[:trip_id])
         items = ItineraryItem.joins(:idea_card).where(idea_cards: { trip_id: trip.id })
-        render json: items.as_json(include: { idea_card: { only: [:title, :content, :category, :url, :image] } })
+        render json: items.as_json(include: { idea_card: { only: [ :title, :content, :category, :url, :image ] } })
     end
 
     def create
@@ -37,11 +37,11 @@ class Api::ItineraryItemsController < ApplicationController
     private
 
     def invalid_create(error)
-        render json: {message: error.message}, status: :unprocessable_entity
+        render json: { message: error.message }, status: :unprocessable_entity
     end
-    
+
     def render_not_found(error)
-    render json: {message: error.message}, status: :not_found
+    render json: { message: error.message }, status: :not_found
     end
 
     def set_itinerary_item

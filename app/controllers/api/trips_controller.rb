@@ -5,15 +5,15 @@ class Api::TripsController < ApplicationController
 
     def index
         trips = current_user.trips.includes(trip_members: :user).where(is_template: false)
-        render json: trips.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name], methods: [:avatar_url] } } } })
-    end
-    
-    def show
-        @trip = Trip.includes(trip_members: :user).find(params[:id])
-        render json: @trip.as_json(include: { trip_members: { only: [:id, :user_id, :role], include: { user: { only: [:name], methods: [:avatar_url] } } } })
+        render json: trips.as_json(include: { trip_members: { only: [ :id, :user_id, :role ], include: { user: { only: [ :name ], methods: [ :avatar_url ] } } } })
     end
 
-    def create 
+    def show
+        @trip = Trip.includes(trip_members: :user).find(params[:id])
+        render json: @trip.as_json(include: { trip_members: { only: [ :id, :user_id, :role ], include: { user: { only: [ :name ], methods: [ :avatar_url ] } } } })
+    end
+
+    def create
         trip = nil
         ActiveRecord::Base.transaction do
             trip = Trip.create!(trip_params)
@@ -23,7 +23,6 @@ class Api::TripsController < ApplicationController
         render json: trip, status: :created
         rescue ActiveRecord::RecordInvalid => e
             render json: { error: e.message }, status: :unprocessable_entity
-
     end
 
     def update
@@ -31,7 +30,7 @@ class Api::TripsController < ApplicationController
         trip.update!(trip_params)
         render json: trip, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Trip not found' }, status: :not_found
+        render json: { error: "Trip not found" }, status: :not_found
     rescue ActiveRecord::RecordInvalid => e
         render json: { error: e.message }, status: :unprocessable_entity
     end
@@ -39,33 +38,33 @@ class Api::TripsController < ApplicationController
     def destroy
         trip = current_user.trips.find(params[:id])
         trip.destroy
-        render json: { message: 'Trip deleted' }, status: :ok
+        render json: { message: "Trip deleted" }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Trip not found' }, status: :not_found
+        render json: { error: "Trip not found" }, status: :not_found
     end
-    
+
     def join
         trip = Trip.find_by!(invite_token: params[:invite_token])
 
         if trip.nil?
-            return render json: { error: 'Invalid invite token' }, status: :not_found
+            return render json: { error: "Invalid invite token" }, status: :not_found
         end
 
 
         membership = TripMember.find_or_create_by(user_id: current_user.id, trip_id: trip.id) do |tm|
             tm.role = "editor"
         end
-        render json: {trip: trip, membership: membership }, status: :ok
+        render json: { trip: trip, membership: membership }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Invalid invite token' }, status: :not_found
+        render json: { error: "Invalid invite token" }, status: :not_found
     end
 
     def send_join_email
         trip = Trip.find(params[:id])
         TripMailer.with(email: params[:email], trip: trip, url: "#{ENV['FRONTEND_URL']}/login?inviteToken=#{trip.invite_token}&tripId=#{trip.id}").invite_email.deliver_now
-        render json: { message: 'Join email sent' }, status: :ok
+        render json: { message: "Join email sent" }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Trip not found' }, status: :not_found
+        render json: { error: "Trip not found" }, status: :not_found
     end
 
     def regenerate_invite
@@ -73,7 +72,7 @@ class Api::TripsController < ApplicationController
         trip.update!(invite_token: SecureRandom.urlsafe_base64(16))
         render json: { invite_token: trip.invite_token }, status: :ok
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Trip not found' }, status: :not_found
+        render json: { error: "Trip not found" }, status: :not_found
     end
 
     def leave_trip
@@ -81,12 +80,12 @@ class Api::TripsController < ApplicationController
         membership = trip.trip_members.find_by(user_id: current_user.id)
         if membership
             membership.destroy
-            render json: { message: 'Left the trip' }, status: :ok
+            render json: { message: "Left the trip" }, status: :ok
         else
-            render json: { error: 'Membership not found' }, status: :not_found
+            render json: { error: "Membership not found" }, status: :not_found
         end
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Trip not found' }, status: :not_found
+        render json: { error: "Trip not found" }, status: :not_found
     end
 
     def publish_template
@@ -130,7 +129,7 @@ class Api::TripsController < ApplicationController
 
         render json: new_trip, status: :created
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Trip not found' }, status: :not_found
+        render json: { error: "Trip not found" }, status: :not_found
     rescue ActiveRecord::RecordInvalid => e
         render json: { error: e.message }, status: :unprocessable_entity
     end
@@ -138,14 +137,14 @@ class Api::TripsController < ApplicationController
     def get_templates
         templates = Trip.where(is_template: true).includes(trip_members: :user)
         render json: templates.map { |trip|
-            owner = trip.trip_members.find { |tm| tm.role == 'owner' }&.user
+            owner = trip.trip_members.find { |tm| tm.role == "owner" }&.user
             trip.as_json.merge(owner_name: owner&.name)
         }, status: :ok
     end
 
     def duplicate_template
         source = Trip.find(params[:id])
-        return render json: { error: 'Trip is not a template' }, status: :unprocessable_entity unless source.is_template?
+        return render json: { error: "Trip is not a template" }, status: :unprocessable_entity unless source.is_template?
 
         new_trip = nil
         ActiveRecord::Base.transaction do
@@ -189,21 +188,21 @@ class Api::TripsController < ApplicationController
 
         render json: new_trip, status: :created
     rescue ActiveRecord::RecordNotFound => e
-        render json: { error: 'Template not found' }, status: :not_found
+        render json: { error: "Template not found" }, status: :not_found
     rescue ActiveRecord::RecordInvalid => e
         render json: { error: e.message }, status: :unprocessable_entity
     end
 
-    private 
+    private
     def trip_params
         params.require(:trip).permit(:name, :location, :start_date, :end_date, :image_url, :template_description, template_tags: [])
     end
 
     def invalid_create(error)
-        render json: {message: error.message}, status: :unprocessable_entity
+        render json: { message: error.message }, status: :unprocessable_entity
     end
 
     def render_not_found(error)
-        render json: {message: error.message}, status: :not_found
+        render json: { message: error.message }, status: :not_found
     end
 end

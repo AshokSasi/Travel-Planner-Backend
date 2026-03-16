@@ -1,14 +1,14 @@
 class Api::ExpensesController < ApplicationController
     before_action :authorize_request
-    before_action :set_trip, only: [:index, :create, :update, :destroy]
-    before_action :set_expense, only: [:show, :update, :destroy]
+    before_action :set_trip, only: [ :index, :create, :update, :destroy ]
+    before_action :set_expense, only: [ :show, :update, :destroy ]
     rescue_from ActiveRecord::RecordInvalid, with: :invalid_create
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
     include ActionView::Helpers::NumberHelper
 
   def index
     expenses = @trip.expenses.includes(:user).order(created_at: :desc)
-    
+
     render json: expenses.map { |expense| expense_payload(expense) }
   end
 
@@ -26,7 +26,7 @@ class Api::ExpensesController < ApplicationController
   end
 
   def update
-    #check if the current logged in user is the one who made the expense
+    # check if the current logged in user is the one who made the expense
     unless @expense.user_id == current_user.id
       return render json: { message: "You are not authorized to update this expense" }, status: :forbidden
     end
@@ -52,7 +52,7 @@ class Api::ExpensesController < ApplicationController
 
   private
     def invalid_create(error)
-      render json: {message: error.message}, status: :unprocessable_entity
+      render json: { message: error.message }, status: :unprocessable_entity
     end
 
     def set_trip
@@ -64,7 +64,7 @@ class Api::ExpensesController < ApplicationController
     end
 
     def render_not_found(error)
-      render json: {message: error.message}, status: :not_found
+      render json: { message: error.message }, status: :not_found
     end
 
     def expense_params

@@ -163,6 +163,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_12_192531) do
     t.integer "duplicate_count", default: 0
     t.datetime "published_at"
     t.index ["invite_token"], name: "index_trips_on_invite_token"
+    t.check_constraint "end_date >= start_date", name: "end_date_after_start_date"
   end
 
   create_table "users", force: :cascade do |t|
