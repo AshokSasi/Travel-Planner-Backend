@@ -230,6 +230,10 @@ GEM
       erb
       psych (>= 4.0.0)
       tsort
+    redis (5.4.1)
+      redis-client (>= 0.22.0)
+    redis-client (0.27.0)
+      connection_pool
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
@@ -299,6 +303,7 @@ DEPENDENCIES
   rack-attack
   rack-cors
   rails (~> 7.1.6)
+  redis
   rubocop-rails-omakase
   tzinfo-data
 
