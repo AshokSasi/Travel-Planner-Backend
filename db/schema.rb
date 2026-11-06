@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_12_192531) do
+ActiveRecord::Schema[7.1].define(version: 2026_11_05_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -137,6 +137,33 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_12_192531) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "trip_agent_messages", force: :cascade do |t|
+    t.bigint "trip_id", null: false
+    t.bigint "user_id"
+    t.string "role", null: false
+    t.text "content", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_id", "created_at"], name: "index_trip_agent_messages_on_trip_id_and_created_at"
+    t.index ["trip_id"], name: "index_trip_agent_messages_on_trip_id"
+    t.index ["user_id"], name: "index_trip_agent_messages_on_user_id"
+  end
+
+  create_table "trip_agent_proposals", force: :cascade do |t|
+    t.bigint "trip_id", null: false
+    t.bigint "trip_agent_message_id", null: false
+    t.string "status", default: "pending", null: false
+    t.jsonb "changes_list", default: [], null: false
+    t.jsonb "applied_change_ids", default: [], null: false
+    t.bigint "resolved_by_id"
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resolved_by_id"], name: "index_trip_agent_proposals_on_resolved_by_id"
+    t.index ["trip_agent_message_id"], name: "index_trip_agent_proposals_on_trip_agent_message_id"
+    t.index ["trip_id"], name: "index_trip_agent_proposals_on_trip_id"
+  end
+
   create_table "trip_members", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "trip_id", null: false
@@ -162,6 +189,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_12_192531) do
     t.string "template_tags", default: [], array: true
     t.integer "duplicate_count", default: 0
     t.datetime "published_at"
+    t.jsonb "preferences", default: {}, null: false
     t.index ["invite_token"], name: "index_trips_on_invite_token"
     t.check_constraint "end_date >= start_date", name: "end_date_after_start_date"
   end
@@ -192,6 +220,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_12_192531) do
   add_foreign_key "settlements", "trips"
   add_foreign_key "settlements", "users"
   add_foreign_key "settlements", "users", column: "receiver_id"
+  add_foreign_key "trip_agent_messages", "trips"
+  add_foreign_key "trip_agent_messages", "users"
+  add_foreign_key "trip_agent_proposals", "trip_agent_messages"
+  add_foreign_key "trip_agent_proposals", "trips"
+  add_foreign_key "trip_agent_proposals", "users", column: "resolved_by_id"
   add_foreign_key "trip_members", "trips"
   add_foreign_key "trip_members", "users"
 end
