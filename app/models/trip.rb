@@ -12,6 +12,8 @@ class Trip < ApplicationRecord
     before_create :generate_invite_token
     has_many :settlements, dependent: :destroy
     has_many :categories, dependent: :destroy
+    has_many :trip_agent_messages, dependent: :destroy
+    has_many :trip_agent_proposals, dependent: :destroy
     private
 
     def create_itinerary_days

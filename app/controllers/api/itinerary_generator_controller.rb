@@ -14,6 +14,8 @@ class Api::ItineraryGeneratorController < ApplicationController
     trip = Trip.find(params[:id])
 
     days = ItineraryGeneratorService.new(trip, preferences).call
+    # Kept so the trip assistant knows the group's budget and style later
+    trip.update!(preferences: preferences.to_h)
     render json: { success: true, itinerary: days }, status: :ok
   rescue ::Anthropic::Errors::Error => e
     render json: { error: "AI generation is temporarily unavailable, please try again later" }, status: :service_unavailable
@@ -27,7 +29,7 @@ class Api::ItineraryGeneratorController < ApplicationController
 
   private
 
-  # Regions, pace, notes and answers only shape this generation; they aren't saved on the trip
+  # Saved on the trip after a successful generation for the trip assistant to use
   def preferences
     params.permit(:budget, :travel_style, :group_type, :pace, :notes,
                   interests: [], regions: [], answers: [ :question, :answer, { answer: [] } ])

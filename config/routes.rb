@@ -37,6 +37,12 @@ Rails.application.routes.draw do
       end
       resources :itinerary_items, only: [ :index, :update ]
       resources :itinerary_days, only: [ :index, :destroy, :create, :update ]
+      resource :agent, only: [], controller: "trip_agent" do
+        get "messages", action: :index
+        post "messages", action: :create
+        post "proposals/:proposal_id/apply", action: :apply
+        post "proposals/:proposal_id/discard", action: :discard
+      end
     end
   end
 end
